@@ -34,6 +34,10 @@ class GaqqieJob(JobV1):
         else:
             return None
 
+    def cancel(self) -> None:
+        """Attempt to cancel the job."""
+        self._job = self.backend().provider().job_api.cancel_job_by_id(self.job_id())
+
     def status(self) -> JobStatus:
         """Return the status of the job, among the values of ``JobStatus``."""
         self._job = self.backend().provider().job_api.get_job_by_id(self.job_id())

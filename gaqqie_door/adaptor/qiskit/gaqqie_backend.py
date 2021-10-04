@@ -1,17 +1,22 @@
 import json
+from typing import List
 
 from qiskit import QuantumCircuit
 from qiskit.compiler.assembler import assemble
 from qiskit.providers import BackendV1, Job, Options
+from qiskit.providers.models.backendstatus import BackendStatus
 
 from .gaqqie_job import GaqqieJob
-from ...rest import Jobbeforesubmission
+from ...rest import Jobbeforesubmission, Device
 
 
 class GaqqieBackend(BackendV1):
     # see https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/providers/backend.py
-    def __init__(self, configuration, provider: "GaqqieProvider") -> None:
+    def __init__(
+        self, configuration, device: Device, provider: "GaqqieProvider"
+    ) -> None:
         super().__init__(configuration, provider)
+        self._device: Device = device
 
     @classmethod
     def _default_options(cls):
@@ -63,3 +68,31 @@ class GaqqieBackend(BackendV1):
         response = self.provider().job_api.submit_job(request)
         job = GaqqieJob(self, response)
         return job
+
+    def status(self):
+        """Return the backend status.
+        Returns:
+            BackendStatus: the status of the backend.
+        """
+        return BackendStatus(
+            backend_name=self.name(),
+            backend_version="1",
+            operational=True,
+            pending_jobs=self._device.queued_jobs,
+            status_msg=self._device.status,
+        )
+
+    def jobs(self, **kwargs) -> List[GaqqieJob]:
+        # get job information from cloud
+        jobs = self.provider().job_api.get_jobs()
+
+        # create backend instances
+        gaqqie_jobs = []
+        for job in jobs:
+            gaqqie_job = GaqqieJob(
+                backend=self,
+                job=job,
+            )
+            gaqqie_jobs.append(gaqqie_job)
+
+        return gaqqie_jobs

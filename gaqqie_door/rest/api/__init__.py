@@ -5,3 +5,4 @@ from __future__ import absolute_import
 # import apis into api package
 from gaqqie_door.rest.api.device_api import DeviceApi
 from gaqqie_door.rest.api.job_api import JobApi
+from gaqqie_door.rest.api.provider_api import ProviderApi
