@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import List
 
 from qiskit import Aer
@@ -18,23 +19,22 @@ class GaqqieProvider(ProviderV1):
         self._description: str = description
         self._url: str = None
         self._api_client: ApiClient2 = None
+        self._lock: Lock = Lock()
 
     def enable_account(self, url: str) -> None:
-        self._url = url
+        # thread safe
+        with self._lock:
+            self._url = url
+            self._init_api()
 
     def _init_api(self) -> None:
-        # TODO thread safe
-        if self._url is not None:
-            rest_config = Configuration()
-            rest_config.host = self._url
+        rest_config = Configuration()
+        rest_config.host = self._url
 
-            self._api_client = ApiClient2(rest_config)
-            self._job_api = JobApi(api_client=self._api_client)
-            self._device_api = DeviceApi(api_client=self._api_client)
-            self._provider_api = ProviderApi(api_client=self._api_client)
-        else:
-            # TODO raise Error
-            pass
+        self._api_client = ApiClient2(rest_config)
+        self._job_api = JobApi(api_client=self._api_client)
+        self._device_api = DeviceApi(api_client=self._api_client)
+        self._provider_api = ProviderApi(api_client=self._api_client)
 
     @property
     def name(self) -> str:
@@ -61,8 +61,6 @@ class GaqqieProvider(ProviderV1):
         return self._provider_api
 
     def backends(self, name: str = None, **kwargs) -> List[GaqqieBackend]:
-        self._init_api()
-
         # get backend information from cloud
         backends = []
         if name is None:
@@ -94,8 +92,6 @@ class GaqqieProvider(ProviderV1):
         return backends
 
     def providers(self, name: str = None, **kwargs) -> List["GaqqieProvider"]:
-        self._init_api()
-
         # get backend information from cloud
         gaqqie_providers = []
         if name is None:

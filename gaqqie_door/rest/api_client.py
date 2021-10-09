@@ -613,7 +613,10 @@ class ApiClient(object):
                     value = data[klass.attribute_map[attr]]
                     kwargs[attr] = self.__deserialize(value, attr_type)
 
-        instance = klass(**kwargs)
+        if len(kwargs) == 0:
+            instance  = None
+        else:
+            instance = klass(**kwargs)
 
         if (isinstance(instance, dict) and
                 klass.swagger_types is not None and
