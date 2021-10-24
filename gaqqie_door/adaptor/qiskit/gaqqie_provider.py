@@ -13,6 +13,17 @@ class GaqqieProvider(ProviderV1):
     def __init__(
         self, name: str = "gaqqie", status: str = None, description: str = None
     ) -> None:
+        """Initializes GaqqieProvider object.
+
+        Parameters
+        ----------
+        name : str, optional
+            provider name, by default "gaqqie".
+        status : str, optional
+            provider status, by default None.
+        description : str, optional
+            provider description, by default None.
+        """
         super().__init__()
         self._name: str = name
         self._status: str = status
@@ -22,6 +33,13 @@ class GaqqieProvider(ProviderV1):
         self._lock: Lock = Lock()
 
     def enable_account(self, url: str) -> None:
+        """Enables account.
+
+        Parameters
+        ----------
+        url : str
+            the base URL of the gaqqie API for users.
+        """
         # thread safe
         with self._lock:
             self._url = url
@@ -38,29 +56,83 @@ class GaqqieProvider(ProviderV1):
 
     @property
     def name(self) -> str:
+        """Returns provider name.
+
+        Returns
+        -------
+        str
+            provider name.
+        """
         return self._name
 
     @property
     def status(self) -> str:
+        """Returns provider status.
+
+        Returns
+        -------
+        str
+            provider status.
+        """
         return self._status
 
     @property
     def description(self) -> str:
+        """Returns provider description.
+
+        Returns
+        -------
+        str
+            provider description.
+        """
         return self._description
 
     @property
     def job_api(self) -> JobApi:
+        """Returns "job interface" of the gaqqie API for users.
+
+        Returns
+        -------
+        JobApi
+            job interface.
+        """
         return self._job_api
 
     @property
     def device_api(self) -> DeviceApi:
+        """Returns "device interface" of the gaqqie API for users.
+
+        Returns
+        -------
+        DeviceApi
+            device interface.
+        """
         return self._device_api
 
     @property
     def provider_api(self) -> ProviderApi:
+        """Returns "provider interface" of the gaqqie API for users.
+
+        Returns
+        -------
+        ProviderApi
+            provider interface.
+        """
         return self._provider_api
 
     def backends(self, name: str = None, **kwargs) -> List[GaqqieBackend]:
+        """Returns backends.
+
+        Parameters
+        ----------
+        name : str, optional
+            backend name to get, by default None
+
+        Returns
+        -------
+        List[GaqqieBackend]
+            list of backends.
+        """
         # get backend information from cloud
         backends = []
         if name is None:
@@ -92,6 +164,18 @@ class GaqqieProvider(ProviderV1):
         return backends
 
     def providers(self, name: str = None, **kwargs) -> List["GaqqieProvider"]:
+        """Returns providers.
+
+        Parameters
+        ----------
+        name : str, optional
+            provider name to get, by default None
+
+        Returns
+        -------
+        List[GaqqieProvider]
+            list of providers.
+        """
         # get backend information from cloud
         gaqqie_providers = []
         if name is None:
