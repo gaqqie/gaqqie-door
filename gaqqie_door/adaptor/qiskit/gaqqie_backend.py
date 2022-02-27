@@ -92,7 +92,7 @@ class GaqqieBackend(BackendV1):
         """
         serialized_json = json.dumps(assemble(circuit, self).to_dict(), indent=2)
         request = Jobbeforesubmission(
-            provider_name=self.provider().name,
+            provider_name=self._device.provider_name,
             device_name=self.name(),
             instructions=serialized_json,
         )
