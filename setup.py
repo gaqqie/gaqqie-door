@@ -8,7 +8,7 @@ this_directory = Path(__file__).parent
 
 setup(
     name="gaqqie-door",
-    version="0.1.0",
+    version="0.2.0",
     author="Satoyuki Tsukano",
     author_email="tknstyk@gmail.com",
     description="a client library for users to access the quantum computer cloud platform 'gaqqie-sky' in gaqqie suite.",
